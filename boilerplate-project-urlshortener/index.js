@@ -45,7 +45,7 @@ app.post('/api/shorturl', function(req, res) {
 
   dns.lookup(hostName, (err, address) => {
     if (err) {
-      return res.json({error: "Invalid URL!"});
+      return res.json({error: "invalid url"});
     } else {
       const shortUrl = idCounter ++;
       urlDatabase.push({ original_url: originalUrl, short_url: shortUrl });
@@ -61,7 +61,7 @@ app.post('/api/shorturl', function(req, res) {
 // redirect endpoint
 app.get('/api/shorturl/:id', function(req, res) {
   const id = parseInt(req.params.id);
-  const found = urlDatabase.find(entry => entry.short_url = id);
+  const found = urlDatabase.find(entry => entry.short_url === id);
   
   if (found) {
     res.redirect(found.original_url);
