@@ -57,7 +57,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     res.json( {
       _id: userId,
       username: user.username,
-      date: savedExercise.date.toDateString,
+      date: savedExercise.date.toDateString(),
       duration: savedExercise.duration,
       description: savedExercise.description
     });
@@ -68,6 +68,52 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   }
 });
 
+// get user's exercise log
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+  const userId = req.params._id;
+  const { from, to, limit } = req.query;
+  const user = await User.findById(userId);
+
+
+  // checking if user exists
+  if (!user) return res.status(404).send('User not found');
+
+  // Build the query object
+  let query = { userId };
+
+  if (from || to) {
+    query.date = {};
+    if (from) query.date.$gte = new Date(from);
+    if (to) query.date.$lte = new Date(to);
+  }
+
+  let exercisesQuery = Exercise.find(query).select('description duration date');
+
+  // Apply limit if provided
+  if (limit) {
+    exercisesQuery = exercisesQuery.limit(Number(limit));
+  }
+  
+  const exercises = await exercisesQuery.exec();
+
+  const log = exercises.map( ex => ({
+    description: ex.description,
+    duration: ex.duration,
+    date: ex.date.toDateString(),
+  }));
+
+  res.json({
+    username: user.username,
+    count: log.length,
+    _id: user._id,
+    log: log
+  });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('No exercises found for this user!')
+  }
+})
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // connect 
 mongoose.connect(process.env.MONGO_URI);
 
-// define user schema
+// user schema
 const userSchema = new mongoose.Schema( {
     username: {
         type: String, required: true
@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema( {
 
 const User = mongoose.model('User', userSchema);
 
+// exercise schema
 const exerciseSchema = new mongoose.Schema( {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     description: { type: String, required: true },
