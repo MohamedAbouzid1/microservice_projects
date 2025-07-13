@@ -115,6 +115,17 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   }
 })
 
+// get users
+app.get('/api/users', async (req, res) => {
+  try {
+  const users = await User.find({}, 'username _id');
+  console.log(users);
+  res.json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Error no users found!')
+  } 
+})
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
